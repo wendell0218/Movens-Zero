@@ -154,10 +154,15 @@ Movens-Zero is improved using Qwen2.5-Omni-3B. Qwen weights are not distributed 
 ## Citation
 
 ~~~bibtex
-@article{anonymous2026movens,
-  title   = {Scaling Humanoid Motion Foundation Models with
+@article{bu2026movenszero,
+  title   = {Movens-Zero: Scaling Humanoid Motion Foundation Models with
              Large-Scale Human Videos},
-  author  = {Anonymous Authors},
+  author  = {Wendong Bu and Tinghong Ye and Qizhou Wang and Jiacheng Li and
+             Zhiqi Ge and Yuze Lin and Zhongqi Yue and Yi Su and Jingyu Wang and
+             Kai Shen and Jingdong Liu and Chengyuan Deng and Xiaoxuan Chen and
+             Xin Tan and Jiaming Ji and Wenqiao Zhang and Chenghong Jiang and
+             Tuoyu Li and Siliang Tang and Jun Xiao and Tat-Seng Chua and
+             Yueting Zhuang and Xingxing Wang and Juncheng Li},
   journal = {Technical Report},
   year    = {2026}
 }
