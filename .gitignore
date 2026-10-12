@@ -12,3 +12,6 @@ checkpoints/
 models/
 outputs/
 wandb/
+
+# Per-machine real-robot configuration (never publish)
+.deploy_real.env
