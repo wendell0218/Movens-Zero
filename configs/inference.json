@@ -1,0 +1,54 @@
+{
+  "seed": 292285,
+  "default_inference_steps": 10,
+  "checkpoint": "checkpoints/movens-zero.safetensors",
+  "normalization": "assets/normalization.json",
+  "initial_pose": "assets/initial_pose.npy",
+  "model": {
+    "backbone": "Qwen/Qwen2.5-Omni-3B",
+    "action_dim": 39,
+    "action_horizon": 30,
+    "action_exec_horizon": 20,
+    "rtc_max_delay": 11,
+    "state_dim": 39,
+    "hidden_dim": 1536,
+    "num_blocks": 6,
+    "num_heads": 24,
+    "qk_norm": "fp32_layer_norm",
+    "view_feature_dim": 2048,
+    "use_future_progress": true,
+    "future_progress_dim": 5,
+    "train_diffusion_steps": 1000,
+    "noise_scheduler": "flow"
+  },
+  "motion": {
+    "fps": 50,
+    "past_frames": 0,
+    "representation": "joint_abs29_root_delta_local_xy2_root_rot5_delta5_root_height1_foot_contact2"
+  },
+  "modalities": {
+    "text": {},
+    "music": {
+      "decoder": "ffmpeg",
+      "sampling_rate": 16000,
+      "window_seconds": 0.6,
+      "left_context_seconds": 0.0,
+      "full_input": false,
+      "align_start_hold": true
+    },
+    "speech": {
+      "decoder": "ffmpeg",
+      "sampling_rate": 16000,
+      "window_seconds": 0.6,
+      "left_context_seconds": 0.0,
+      "full_input": true,
+      "align_start_hold": true
+    },
+    "video": {
+      "decoder": "ffmpeg",
+      "sample_fps": 8.0,
+      "size_pixels": 50176,
+      "clip_aligned": true
+    }
+  }
+}

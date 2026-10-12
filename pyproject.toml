@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "movens-zero"
+version = "0.1.0"
+description = "Multimodal humanoid motion generation with Movens-Zero"
+readme = "README.md"
+requires-python = ">=3.10,<3.12"
+dependencies = [
+    "diffusers==0.37.0",
+    "numpy==1.26.4",
+    "safetensors==0.6.2",
+    "torch==2.7.0",
+    "transformers==4.57.0",
+]
+
+[project.optional-dependencies]
+flash = [
+    "flash-attn==2.7.4.post1",
+]
+
+[project.scripts]
+movens-zero = "movens_zero.inference:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["movens_zero*"]
+
+[tool.setuptools.package-data]
+movens_zero = ["assets/*.json", "assets/*.npy"]
