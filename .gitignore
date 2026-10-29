@@ -10,8 +10,19 @@ __pycache__/
 *.safetensors
 checkpoints/
 models/
+third_party/
 outputs/
 wandb/
 
-# Per-machine real-robot configuration (never publish)
 .deploy_real.env
+.sim2real.env
+.sim2sim.env
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+training/data/
+evaluation/data/
+evaluation/outputs/
+sim2sim/runs/
+runs/

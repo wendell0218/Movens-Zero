@@ -1,0 +1,7 @@
+{
+  "joint_abs": 1.0,
+  "root_delta_xy": 3.0,
+  "root_rot6": 10.0,
+  "root_height": 15.0,
+  "foot_contact": 0.1
+}

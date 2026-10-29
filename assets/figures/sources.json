@@ -1,0 +1,14 @@
+{
+  "repository": "OmniHM_arxiv",
+  "revision": "02e104736adbac9fa87e388bb4565d4ff17d054d",
+  "figures": {
+    "overview": {
+      "source": "report/figures/overview.pdf",
+      "blob": "d8d554b66ca8481a0ea8fcd831bd5809ce96762e",
+      "png_export": {
+        "use_pdf_cropbox": true,
+        "long_edge_pixels": 2000
+      }
+    }
+  }
+}

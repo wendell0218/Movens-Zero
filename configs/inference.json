@@ -1,19 +1,19 @@
 {
-  "seed": 292285,
+  "seed": 0,
   "default_inference_steps": 10,
-  "checkpoint": "checkpoints/movens-zero.safetensors",
+  "checkpoint": "checkpoints/Movens-Zero-XL/model.safetensors",
   "normalization": "assets/normalization.json",
   "initial_pose": "assets/initial_pose.npy",
   "model": {
     "backbone": "Qwen/Qwen2.5-Omni-3B",
-    "action_dim": 39,
+    "action_dim": 40,
     "action_horizon": 30,
     "action_exec_horizon": 20,
     "rtc_max_delay": 11,
-    "state_dim": 39,
-    "hidden_dim": 1536,
-    "num_blocks": 6,
-    "num_heads": 24,
+    "state_dim": 40,
+    "hidden_dim": 1920,
+    "num_blocks": 7,
+    "num_heads": 30,
     "qk_norm": "fp32_layer_norm",
     "view_feature_dim": 2048,
     "use_future_progress": true,
@@ -24,7 +24,8 @@
   "motion": {
     "fps": 50,
     "past_frames": 0,
-    "representation": "joint_abs29_root_delta_local_xy2_root_rot5_delta5_root_height1_foot_contact2"
+    "representation": "root40_v1",
+    "contact_protocol": "isaac_leg_delta_v2"
   },
   "modalities": {
     "text": {},
@@ -50,5 +51,10 @@
       "size_pixels": 50176,
       "clip_aligned": true
     }
-  }
+  },
+  "cfg_scale": 1.5,
+  "cfg_interval": [
+    0.2,
+    0.8
+  ]
 }
