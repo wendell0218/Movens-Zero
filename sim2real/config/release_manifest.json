@@ -1,0 +1,12 @@
+{
+  "motion_representation": "root40_v1",
+  "wire_action_dim": 36,
+  "model_action_dim": 40,
+  "checkpoint_source": "https://huggingface.co/wendell0218/Movens-Zero-XL",
+  "checkpoint_hash_env": "MOVENS_CHECKPOINT_SHA256",
+  "legacy_checkpoint": {
+    "checkpoint_sha256": "5ca25d8114ee9e0d55ba303d8da18e19b5829a432943f2e7e2fe651cf3789b10",
+    "motion_representation": "root40_v1",
+    "checkpoint_step": 99000
+  }
+}

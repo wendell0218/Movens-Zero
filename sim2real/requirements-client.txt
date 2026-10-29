@@ -1,0 +1,6 @@
+numpy==1.26.4
+pandas>=2.2,<3
+websocket-client>=1.8,<2
+pyzmq>=26,<28
+imageio-ffmpeg>=0.6,<0.7
+cyclonedds==0.10.2
