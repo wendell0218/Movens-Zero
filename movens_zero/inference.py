@@ -158,18 +158,21 @@ def main(default_mode: str | None = None) -> None:
     )
     model.to(args.device)
     model.eval()
-    poses = generate_motion(
-        model=model,
-        config=config,
-        normalizer=normalizer,
-        mode=args.mode,
-        prompt=prompt,
-        input_path=input_path,
-        initial_pose=initial_pose,
-        output_frames=args.num_output_frames,
-        inference_steps=inference_steps,
-        device=args.device,
-    )
+    device_type = torch.device(args.device).type
+    with torch.inference_mode(), torch.autocast(device_type, dtype=torch.bfloat16, enabled=device_type == "cuda"):
+        future = generate_motion(
+            model=model,
+            config=config,
+            normalizer=normalizer,
+            mode=args.mode,
+            prompt=prompt,
+            input_path=input_path,
+            initial_pose=initial_pose,
+            output_frames=max(1, args.num_output_frames - 1),
+            inference_steps=inference_steps,
+            device=args.device,
+        )
+    poses = np.concatenate([initial_pose[None].astype(np.float32), future])[: args.num_output_frames]
     export_motion(
         output_dir,
         poses,
