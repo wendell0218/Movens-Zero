@@ -9,7 +9,6 @@ import torch.nn.functional as F
 
 from movens_zero.media import decode_video_segment, probe_video
 
-# Person height (pixels) in the model's video input below which zoom is enabled, and the height it is zoomed to.
 SMALL_PIXELS = 90.0
 TARGET_PIXELS = 120.0
 DETECTION_FPS = 5.0
@@ -41,7 +40,6 @@ def _iou(a: np.ndarray, b: np.ndarray) -> float:
 
 
 def detect_main_person(path: Path, device: str = "cuda:0") -> tuple[np.ndarray, np.ndarray, int, int]:
-    """Track the main person: largest box on the first detection, then the box overlapping it most."""
     from torchvision.models.detection import FasterRCNN_ResNet50_FPN_V2_Weights, fasterrcnn_resnet50_fpn_v2
 
     width, height, _, _ = probe_video(path)
@@ -72,7 +70,6 @@ def detect_main_person(path: Path, device: str = "cuda:0") -> tuple[np.ndarray, 
 
 
 class PersonZoom:
-    """Per-window zoom on the main person when they appear small in the model's video input."""
 
     def __init__(self, times: np.ndarray, boxes: np.ndarray, width: int, height: int, size_pixels: int):
         self.times, self.boxes, self.width, self.height = times, boxes, width, height
@@ -94,7 +91,6 @@ class PersonZoom:
         return float(np.clip(center_x - w / 2, 0, self.width - w)), float(np.clip(center_y - h / 2, 0, self.height - h)), w, h
 
     def decode(self, path, start_seconds, duration_seconds, sample_fps, size_pixels):
-        """Drop-in replacement for media.decode_video_segment; unchanged when zoom is disabled."""
         if not self.enabled:
             return decode_video_segment(path, start_seconds, duration_seconds, sample_fps, size_pixels)
         frames, source_fps, source_duration = decode_video_segment(
