@@ -14,7 +14,7 @@ from movens_zero.root40 import (
 
 
 def generate_root40_motion(model, config, normalizer, mode, prompt, input_path,
-                           initial_pose, output_frames, inference_steps, device):
+                           initial_pose, output_frames, inference_steps, device, video_decoder=None):
     horizon, execute = int(config.model.action_horizon), int(config.model.action_exec_horizon)
     overlap = horizon - execute
     if output_frames <= 0 or not 0 < overlap < int(config.model.rtc_max_delay):
@@ -46,7 +46,7 @@ def generate_root40_motion(model, config, normalizer, mode, prompt, input_path,
                 settings.window_seconds + settings.left_context_seconds)
         elif mode == "video":
             settings = config.modalities.video
-            arguments["video"], _, _ = decode_video_segment(Path(input_path),
+            arguments["video"], _, _ = (video_decoder or decode_video_segment)(Path(input_path),
                 frame / config.motion.fps, horizon / config.motion.fps,
                 settings.sample_fps, settings.size_pixels)
         if previous is None:

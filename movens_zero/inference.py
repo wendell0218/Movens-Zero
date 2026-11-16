@@ -50,6 +50,8 @@ def parse_args(default_mode: str | None = None) -> argparse.Namespace:
     parser.add_argument("--seed", type=int)
     parser.add_argument("--cfg-scale", type=float)
     parser.add_argument("--cfg-interval", nargs=2, type=float)
+    parser.add_argument("--auto-zoom", action=argparse.BooleanOptionalAction, default=True,
+                        help="Video only: zoom in on the main person when they appear small (default: on)")
     args = parser.parse_args()
     if args.prompt is None:
         args.prompt = DEFAULT_PROMPTS[args.mode]
@@ -80,7 +82,8 @@ def main(default_mode: str | None = None) -> None:
         raise ValueError("CFG interval must satisfy 0 <= low < high <= 1")
     checkpoint_path = args.checkpoint
     if checkpoint_path is None:
-        checkpoint_path = Path.cwd() / config.checkpoint
+        candidates = [Path.cwd() / config.checkpoint, Path(__file__).resolve().parents[1] / config.checkpoint]
+        checkpoint_path = next((path for path in candidates if path.is_file()), candidates[0])
     checkpoint_path = checkpoint_path.expanduser().resolve()
     if not checkpoint_path.is_file():
         raise FileNotFoundError(f"Checkpoint does not exist: {checkpoint_path}")
@@ -136,6 +139,7 @@ def main(default_mode: str | None = None) -> None:
         "cfg_interval": config.cfg_interval,
         "motion_representation": config.motion.representation,
         "checkpoint_architecture": architecture,
+        "auto_zoom": False,
         "description": args.description,
         "effective_prompt": args.instruction,
     }
@@ -148,6 +152,13 @@ def main(default_mode: str | None = None) -> None:
     if torch.cuda.is_available():
         torch.cuda.manual_seed_all(seed)
     prompt = args.instruction
+
+    video_decoder = None
+    if args.mode == "video" and args.auto_zoom:
+        from movens_zero.auto_zoom import PersonZoom
+        zoom = PersonZoom.from_video(input_path, int(config.modalities.video.size_pixels), args.device)
+        video_decoder = zoom.decode
+        metadata["auto_zoom"] = dict(enabled=zoom.enabled, person_pixels=round(zoom.person_pixels, 1))
 
     model = MovensZeroModel.from_pretrained(
         checkpoint_path=checkpoint_path,
@@ -171,6 +182,7 @@ def main(default_mode: str | None = None) -> None:
             output_frames=max(1, args.num_output_frames - 1),
             inference_steps=inference_steps,
             device=args.device,
+            video_decoder=video_decoder,
         )
     poses = np.concatenate([initial_pose[None].astype(np.float32), future])[: args.num_output_frames]
     export_motion(

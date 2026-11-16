@@ -36,6 +36,8 @@ parser.add_argument("--start-index", type=int, default=0)
 parser.add_argument("--end-index", type=int, default=0)
 parser.add_argument("--pack-only", action="store_true")
 parser.add_argument("--dry-run", action="store_true")
+parser.add_argument("--auto-zoom", action=argparse.BooleanOptionalAction, default=True,
+    help="Video only: zoom in on the main person when they appear small (default: on)")
 args = parser.parse_args()
 
 metrics_root = args.metrics_root.expanduser().resolve()
@@ -74,6 +76,7 @@ protocol = dict(benchmark="Movens-Intent", track=args.track, samples=count,
     initial_array_sha256=__import__("hashlib").sha256(initials.tobytes()).hexdigest(),
     seed=0, cfg_scale=args.cfg_scale, cfg_interval=list(args.cfg_interval),
     steps=args.num_inference_steps, native_fps=50, output_fps=30,
+    auto_zoom=bool(args.auto_zoom) if args.track == "video" else None,
     smoothing="none", gt_state_each_chunk=False,
     temporal_protocol="include initial frame",
     ground_alignment="none_world_coordinates" if args.track == "video" else "sequence_constant_min_robot_collision_distance")
@@ -109,6 +112,10 @@ if not args.pack_only:
                 if str(cached["generation_sha256"].item()) != identity or str(cached["sample_id"].item()) != row["sample_id"]:
                     raise ValueError(f"Stale sample: {target}")
             continue
+        video_decoder = None
+        if args.track == "video" and args.auto_zoom:
+            from movens_zero.auto_zoom import PersonZoom
+            video_decoder = PersonZoom.from_video(args.data_dir / row["input_path"], int(config.modalities.video.size_pixels), args.device).decode
         random.seed(0)
         np.random.seed(0)
         torch.manual_seed(0)
@@ -124,7 +131,7 @@ if not args.pack_only:
         with torch.inference_mode(), torch.autocast(torch.device(args.device).type, dtype=torch.bfloat16,
                 enabled=torch.device(args.device).type == "cuda"):
             future = generate_root40_motion(model, config, normalizer, args.track, prompt, media,
-                initials[index], native_frames, args.num_inference_steps, args.device)
+                initials[index], native_frames, args.num_inference_steps, args.device, video_decoder=video_decoder)
         history = np.concatenate([initials[index:index + 1], future])
         sampled = sample_motion36(history, source_fps=50, sample_times=(np.arange(length) + offset) / 30)
         qpos = motion36_to_qpos(sampled).astype(np.float32)

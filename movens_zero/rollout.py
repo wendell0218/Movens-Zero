@@ -29,12 +29,13 @@ def generate_motion(
     output_frames: int,
     inference_steps: int,
     device: str,
+    video_decoder=None,
 ) -> np.ndarray:
     if int(config.model.action_dim) == 40:
         from movens_zero.rollout_root40 import generate_root40_motion
         return generate_root40_motion(
             model, config, normalizer, mode, prompt, input_path, initial_pose,
-            output_frames, inference_steps, device,
+            output_frames, inference_steps, device, video_decoder=video_decoder,
         )
     horizon = int(config.model.action_horizon)
     execute = int(config.model.action_exec_horizon)

@@ -82,7 +82,7 @@ The four releases contain the trained Qwen2.5-Omni backbone and the action exper
 Download the default XL release; use `--model-size S`, `M`, or `L` for another size:
 
 ~~~bash
-source scripts/download_models.sh
+python scripts/download_models.py
 ~~~
 
 This writes `checkpoints/Movens-Zero-XL/model.safetensors` and a download receipt.
@@ -94,7 +94,7 @@ Generate G1 motion from text, music, speech, or video.
 ### Text
 
 ~~~bash
-source inference.sh \
+movens-zero \
   --mode text \
   --prompt "Generate a motion sequence that matches the following description." \
   --description "A person walks forward calmly." \
@@ -104,7 +104,7 @@ source inference.sh \
 ### Music
 
 ~~~bash
-source inference.sh \
+movens-zero \
   --mode music \
   --input-path /path/to/music.wav \
   --prompt "Generate a dance motion that follows the rhythm and energy of this music." \
@@ -114,7 +114,7 @@ source inference.sh \
 ### Speech
 
 ~~~bash
-source inference.sh \
+movens-zero \
   --mode speech \
   --input-path /path/to/speech.wav \
   --prompt "Listen for the spoken task in the audio, then carry out that task as body motion." \
@@ -124,7 +124,7 @@ source inference.sh \
 ### Video
 
 ~~~bash
-source inference.sh \
+movens-zero \
   --mode video \
   --input-path /path/to/video.mp4 \
   --prompt "The clip is the reference. Imitate the person's body movement as closely as possible." \
@@ -146,10 +146,11 @@ source inference.sh \
 | <code>--cfg-scale</code> | CFG strength, default: <code>1.5</code> |
 | <code>--cfg-interval</code> | Noise-time interval for CFG, default: <code>0.2 0.8</code> |
 | <code>--seed</code> | Random seed, default: <code>0</code> |
+| <code>--no-auto-zoom</code> | Video only: disable zooming in on the main person when they appear small |
 | <code>--device</code> | Torch device, default: <code>cuda:0</code> |
 | <code>--attention-implementation</code> | Qwen attention backend: <code>sdpa</code> or <code>flash_attention_2</code> |
 
-Use <code>inference.sh --mode text|music|speech|video</code> for all modalities.
+Use <code>movens-zero --mode text|music|speech|video</code> (or <code>python -m movens_zero.inference</code>) for all modalities.
 
 ### Outputs
 

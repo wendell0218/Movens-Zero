@@ -8,7 +8,7 @@ Install the evaluation dependencies and download the model and evaluation assets
 
 ```bash
 pip install -e ".[eval]"
-source scripts/download_models.sh --model-size XL
+python scripts/download_models.py --model-size XL
 python evaluation/setup.py
 ```
 

@@ -9,7 +9,7 @@ Use the repository's inference environment, a CUDA GPU with BF16 support, and FF
 ```bash
 conda activate movens-zero
 pip install -r sim2real/requirements-server.txt
-source scripts/download_models.sh --model-size XL
+python scripts/download_models.py --model-size XL
 ```
 
 Install [GR00T WholeBodyControl](https://github.com/NVlabs/GR00T-WholeBodyControl), including the SONIC controller and policy assets, Unitree SDK, and CycloneDDS. The required controller files are listed in [Dependencies](../sim2real/DEPENDENCIES.md).

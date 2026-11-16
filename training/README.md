@@ -8,7 +8,7 @@ Install the training dependencies and download the checkpoint:
 
 ```bash
 pip install -e ".[train]"
-source scripts/download_models.sh --model-size XL
+python scripts/download_models.py --model-size XL
 ```
 
 ## 2. Prepare data
