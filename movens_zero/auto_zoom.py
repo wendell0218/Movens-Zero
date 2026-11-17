@@ -49,7 +49,7 @@ def detect_main_person(path: Path, device: str = "cuda:0") -> tuple[np.ndarray, 
     times, boxes, previous = [], [], None
     with torch.inference_mode():
         for start in range(0, len(frames), 8):
-            batch = torch.from_numpy(frames[start:start + 8]).to(device).permute(0, 3, 1, 2).float() / 255.0
+            batch = torch.from_numpy(frames[start:start + 8].copy()).to(device).permute(0, 3, 1, 2).float() / 255.0
             for offset, output in enumerate(detector(list(batch))):
                 found = output["boxes"][output["labels"] == 1].float().cpu().numpy() * scale
                 if not len(found):
