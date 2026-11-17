@@ -7,7 +7,7 @@ MODEL_RELEASES = {
     "S": ("wendell0218/Movens-Zero-S", "5e229e1e398bdf33c309059e5ea3b561002a5515"),
     "M": ("wendell0218/Movens-Zero-M", "7ac8742c9bcd80900fd210965f454fa1bb6d8e91"),
     "L": ("wendell0218/Movens-Zero-L", "0755e4d06d4bb9f302ecc740a23d3865d4581590"),
-    "XL": ("wendell0218/Movens-Zero-XL", "b1e32f1638a0680e66adf9fdaa852567acffc126"),
+    "XL": ("wendell0218/Movens-Zero-XL", "87271b4f79fd850d62fe69c55f314209f29da262"),
 }
 
 
