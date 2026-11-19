@@ -18,6 +18,11 @@ dependencies = [
     "huggingface-hub>=0.34,<1.0",
     "pillow>=10,<13",
     "torchvision==0.22.0",
+    "clarabel==0.11.1",
+    "cffi==1.17.1",
+    "pycparser==2.22",
+    "scipy==1.15.3",
+    "threadpoolctl==3.6.0",
 ]
 
 [project.optional-dependencies]
@@ -51,4 +56,4 @@ where = ["."]
 include = ["movens_zero*"]
 
 [tool.setuptools.package-data]
-movens_zero = ["assets/*.json", "assets/*.npy"]
+movens_zero = ["assets/*.json", "assets/*.npy", "jerk/assets/*.json", "jerk/assets/*.urdf", "jerk/THIRD_PARTY_LICENSES.txt"]

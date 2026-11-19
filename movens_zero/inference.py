@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import random
+import time
 from pathlib import Path
 
 import numpy as np
@@ -10,6 +11,12 @@ import torch
 from movens_zero.config import load_config
 from movens_zero.conditioning import DEFAULT_PROMPTS, build_prompt
 from movens_zero.export import export_motion
+from movens_zero.motion_format import (
+    continuous_quaternion_signs,
+    motion36_to_qpos,
+    qpos_to_motion36,
+    sample_motion36,
+)
 from movens_zero.normalization import MotionNormalizer, load_initial_pose
 from movens_zero.rollout import generate_motion
 
@@ -48,6 +55,11 @@ def parse_args(default_mode: str | None = None) -> argparse.Namespace:
         default="sdpa",
     )
     parser.add_argument("--seed", type=int)
+    parser.add_argument(
+        "--postprocess",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+    )
     parser.add_argument("--cfg-scale", type=float)
     parser.add_argument("--cfg-interval", nargs=2, type=float)
     parser.add_argument("--auto-zoom", action=argparse.BooleanOptionalAction, default=True,
@@ -140,6 +152,9 @@ def main(default_mode: str | None = None) -> None:
         "motion_representation": config.motion.representation,
         "checkpoint_architecture": architecture,
         "auto_zoom": False,
+        "postprocess": args.postprocess,
+        "postprocess_time_seconds": 0.0,
+        "postprocess_clamped_50hz_frames": 0,
         "description": args.description,
         "effective_prompt": args.instruction,
     }
@@ -185,6 +200,41 @@ def main(default_mode: str | None = None) -> None:
             video_decoder=video_decoder,
         )
     poses = np.concatenate([initial_pose[None].astype(np.float32), future])[: args.num_output_frames]
+    if args.postprocess:
+        from movens_zero.jerk import postprocess_qpos
+
+        started = time.perf_counter()
+        output_dtype = poses.dtype
+        output_frames = len(poses)
+        motion_fps = int(config.motion.fps)
+        frames_30hz = ((output_frames - 1) * 30) // motion_fps + 1
+        sample_times_30hz = np.arange(frames_30hz, dtype=np.float64) / 30.0
+        poses_50hz = poses
+        poses_30hz = sample_motion36(
+            continuous_quaternion_signs(poses_50hz),
+            source_fps=motion_fps,
+            sample_times=sample_times_30hz,
+        )
+        benchmark_30hz = sample_motion36(
+            poses_50hz,
+            source_fps=motion_fps,
+            sample_times=sample_times_30hz,
+        )
+        poses_30hz[:, 32:36] = benchmark_30hz[:, 32:36]
+        qpos_30hz = motion36_to_qpos(poses_30hz)
+        qpos_30hz, _ = postprocess_qpos(qpos_30hz, fps=30.0)
+        poses_30hz = continuous_quaternion_signs(qpos_to_motion36(qpos_30hz))
+        sample_times_50hz = np.arange(output_frames, dtype=np.float64) / motion_fps
+        last_time_30hz = (frames_30hz - 1) / 30.0
+        clamped_frames = int(np.count_nonzero(sample_times_50hz > last_time_30hz + 1e-9))
+        sample_times_50hz = np.minimum(sample_times_50hz, last_time_30hz)
+        poses = sample_motion36(
+            poses_30hz,
+            source_fps=30.0,
+            sample_times=sample_times_50hz,
+        ).astype(output_dtype, copy=False)
+        metadata["postprocess_time_seconds"] = time.perf_counter() - started
+        metadata["postprocess_clamped_50hz_frames"] = clamped_frames
     export_motion(
         output_dir,
         poses,
